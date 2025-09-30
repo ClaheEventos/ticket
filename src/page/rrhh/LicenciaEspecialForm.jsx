@@ -15,6 +15,7 @@ export default function LicenciaEspecialForm() {
     direccion: "",
     telefono: "",
     nombreJefeArea: "",
+    motivo: "",
     codigo: ""
   });
 
@@ -44,10 +45,13 @@ export default function LicenciaEspecialForm() {
       "direccion",
       "telefono",
       "nombreJefeArea",
+      "motivo",
       "codigo"
     ];
 
-    const emptyFields = requiredFields.filter((f) => !formData[f].toString().trim());
+    const emptyFields = requiredFields.filter(
+      (f) => !formData[f].toString().trim()
+    );
     if (emptyFields.length) {
       setMessage(`❌ Completa los campos: ${emptyFields.join(", ")}`);
       return;
@@ -60,7 +64,10 @@ export default function LicenciaEspecialForm() {
       const url =
         "https://script.google.com/macros/s/AKfycbwtrhKwfcc_8QHyvKZKUwPOfSGCA60oRRdBPlv4bILRQtW47onA6dquJyNJHgfQQkv0bQ/exec";
 
-      const formBody = new URLSearchParams({ ...formData, tipo: "licenciaEspecial" });
+      const formBody = new URLSearchParams({
+        ...formData,
+        tipo: "licenciaEspecial",
+      });
 
       const res = await fetch(url, {
         method: "POST",
@@ -87,10 +94,13 @@ export default function LicenciaEspecialForm() {
           direccion: "",
           telefono: "",
           nombreJefeArea: "",
+          motivo: "",
           codigo: ""
         });
       } else {
-        setMessage(`❌ Error: ${data.mensaje || "No se pudo procesar la solicitud"}`);
+        setMessage(
+          `❌ Error: ${data.mensaje || "No se pudo procesar la solicitud"}`
+        );
       }
     } catch (error) {
       console.error(error);
@@ -117,7 +127,7 @@ export default function LicenciaEspecialForm() {
           { label: "Correo Electrónico", name: "correo", type: "email" },
           { label: "Dirección", name: "direccion" },
           { label: "Teléfono", name: "telefono" },
-          { label: "Nombre Jefe de Área", name: "nombreJefeArea" }
+          { label: "Nombre Jefe de Área", name: "nombreJefeArea" },
         ].map((campo) => (
           <div key={campo.name} style={{ marginBottom: "15px" }}>
             <label style={{ fontWeight: "600" }}>{campo.label}</label>
@@ -130,6 +140,18 @@ export default function LicenciaEspecialForm() {
             />
           </div>
         ))}
+
+        {/* Campo motivo */}
+        <div style={{ marginBottom: "15px" }}>
+          <label style={{ fontWeight: "600" }}>Motivo</label>
+          <textarea
+            name="motivo"
+            value={formData.motivo}
+            onChange={handleChange}
+            rows="3"
+            style={{ width: "70%", padding: "8px" }}
+          />
+        </div>
 
         <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "📤 Enviando..." : "Enviar Registro"}

@@ -114,11 +114,11 @@ export default function PedidoForm() {
         <SelectArea
           value={formData.area}
           onChange={(value) => setFormData(prev => ({ ...prev, area: value }))}
-          label="Tu Área"
+          label="Área"
         />
 
         <InputField label="Elemento Artístico" name="elemento" value={formData.elemento} />
-        <InputField label="Tu Nombre y Apellido" name="nombre" value={formData.nombre} />
+        <InputField label="Nombre y Apellido" name="nombre" value={formData.nombre} />
 
         {/* Salones reutilizables con label dinámico */}
         <SelectSalon

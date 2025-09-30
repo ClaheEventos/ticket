@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import CodigoGenerado from "../../components/CodigoGenerado";
 import PDFPreview from "../../components/PDFPreview";
+import SelectArea from "../../components/SelectArea"; // <-- Importamos SelectArea
 
 export default function CambioPuestoForm() {
   const [formData, setFormData] = useState({
@@ -11,6 +12,8 @@ export default function CambioPuestoForm() {
     jornadaActual: "",
     nuevaJornada: "",
     motivo: "",
+    sueldoAnterior: "",
+    sueldoNuevo: "",
     codigo: ""
   });
 
@@ -36,10 +39,14 @@ export default function CambioPuestoForm() {
       "jornadaActual",
       "nuevaJornada",
       "motivo",
+      "sueldoAnterior",
+      "sueldoNuevo",
       "codigo"
     ];
 
-    const emptyFields = requiredFields.filter((f) => !formData[f].toString().trim());
+    const emptyFields = requiredFields.filter(
+      (f) => !formData[f].toString().trim()
+    );
 
     if (emptyFields.length) {
       setMessage(`❌ Completa los campos: ${emptyFields.join(", ")}`);
@@ -53,7 +60,10 @@ export default function CambioPuestoForm() {
       const url =
         "https://script.google.com/macros/s/AKfycbwtrhKwfcc_8QHyvKZKUwPOfSGCA60oRRdBPlv4bILRQtW47onA6dquJyNJHgfQQkv0bQ/exec";
 
-      const formBody = new URLSearchParams({ ...formData, tipo: "cambioPuesto" });
+      const formBody = new URLSearchParams({
+        ...formData,
+        tipo: "cambioPuesto",
+      });
 
       const res = await fetch(url, {
         method: "POST",
@@ -76,10 +86,14 @@ export default function CambioPuestoForm() {
           jornadaActual: "",
           nuevaJornada: "",
           motivo: "",
+          sueldoAnterior: "",
+          sueldoNuevo: "",
           codigo: ""
         });
       } else {
-        setMessage(`❌ Error: ${data.mensaje || "No se pudo procesar la solicitud"}`);
+        setMessage(
+          `❌ Error: ${data.mensaje || "No se pudo procesar la solicitud"}`
+        );
       }
     } catch (error) {
       console.error(error);
@@ -95,10 +109,12 @@ export default function CambioPuestoForm() {
       <form onSubmit={handleSubmit}>
         <CodigoGenerado onGenerate={handleCodigoGenerado} />
 
-        <div style={{ marginBottom: "15px" }}>
-          <label style={{ fontWeight: "600" }}>Sector</label>
-          <input type="text" name="sector" value={formData.sector} onChange={handleChange} />
-        </div>
+        {/* Usamos SelectArea para elegir el sector */}
+        <SelectArea
+          value={formData.sector}
+          onChange={(value) => setFormData((prev) => ({ ...prev, sector: value }))}
+          label="Sector"
+        />
 
         <div style={{ marginBottom: "15px" }}>
           <label style={{ fontWeight: "600" }}>Gerente</label>
@@ -123,6 +139,16 @@ export default function CambioPuestoForm() {
         <div style={{ marginBottom: "15px" }}>
           <label style={{ fontWeight: "600" }}>Nueva Jornada</label>
           <input type="text" name="nuevaJornada" value={formData.nuevaJornada} onChange={handleChange} />
+        </div>
+
+        <div style={{ marginBottom: "15px" }}>
+          <label style={{ fontWeight: "600" }}>Sueldo Anterior</label>
+          <input type="number" name="sueldoAnterior" value={formData.sueldoAnterior} onChange={handleChange} />
+        </div>
+
+        <div style={{ marginBottom: "15px" }}>
+          <label style={{ fontWeight: "600" }}>Sueldo Nuevo</label>
+          <input type="number" name="sueldoNuevo" value={formData.sueldoNuevo} onChange={handleChange} />
         </div>
 
         <div style={{ marginBottom: "15px" }}>

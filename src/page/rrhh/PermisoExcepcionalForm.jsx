@@ -85,7 +85,7 @@ export default function PermisoExcepcionalForm() {
         </div>
 
         <div style={{ marginBottom: "15px" }}>
-          <label style={{ fontWeight: "600" }}>Personal/ carago </label>
+          <label style={{ fontWeight: "600" }}>Personal/ cargo </label>
           <input type="text" name="nombreApellido" value={formData.nombreApellido} onChange={handleChange} />
         </div>
 

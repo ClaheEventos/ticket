@@ -82,8 +82,8 @@ export default function DeviceRequestForm() {
 
   const DEVICE_OPTIONS = ["Notebook", "Celular", "Teclado", "Mouse", "otro"];
   const campos = [
-    { name: "nombre", label: "Tu Nombre" },
-    { name: "telefono", label: "Tu Número Personal" },
+    { name: "nombre", label: "Nombre y Apellido" },
+    { name: "telefono", label: "Número Personal" },
     { name: "cantidad", label: "Cantidad" },
     { name: "razones", label: "Razones" },
     { name: "comentarios", label: "Comentarios" }
@@ -99,7 +99,7 @@ export default function DeviceRequestForm() {
         <SelectArea
           value={formData.area}
           onChange={(value) => setFormData(prev => ({ ...prev, area: value }))}
-          label="Tu Área"
+          label="Área"
         />
 
         <div style={{ marginBottom: "15px" }}>

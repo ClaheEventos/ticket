@@ -34,14 +34,16 @@ function LoginPage({ onLogin }) {
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
+    <div style={{ textAlign: "center" }}>
+                <img src="./public/logo.png" alt="Logo de la Aplicación" className="logo-main" />
+
       <h2>Login</h2>
       <input
         type="email"
         placeholder="Email"
         value={email}
         onChange={e => setEmail(e.target.value)}
-        style={{ padding: "10px", margin: "5px" }}
+       
       />
       <br />
       <input
@@ -49,7 +51,7 @@ function LoginPage({ onLogin }) {
         placeholder="Contraseña"
         value={password}
         onChange={e => setPassword(e.target.value)}
-        style={{ padding: "10px", margin: "5px" }}
+        
       />
       <br />
       <button onClick={handleLogin} style={{ padding: "10px 20px", marginTop: "10px" }}>
@@ -88,16 +90,16 @@ function App() {
 <div className="app-container">
   {/* Header arriba */}
   <header className="app-header">
-    <p style={{ color: "#ffd700", fontWeight: "bold" }}>
-      Usuario: {userEmail}
-    </p>
-    <button onClick={handleLogout} className="logout-button">Cerrar Sesión</button>
-  </header>
+   
+<button onClick={handleLogout} className="logout-button">
+  Cerrar<br />Sesión
+</button>  </header>
 
   {/* Sidebar */}
   <nav className={`sidebar ${menuOpen ? "open" : ""}`}>
-    <div className="tttt">Formularios</div>
-
+ <p style={{ color: "#ffd700", fontWeight: "bold" }}>
+     {userEmail}
+    </p>
     <div className="menu">
       <div className="menu-group-title" onClick={() => setOpenGroup(prev => prev === "RRHH" ? null : "RRHH")}>
         RRHH
@@ -135,7 +137,6 @@ function App() {
               </>
             )}
 
-            <button onClick={handleLogout}>Cerrar Sesión</button>
           </div>
         </nav>
 
@@ -148,7 +149,7 @@ function App() {
         <div className={`sidebar-overlay ${menuOpen ? "active" : ""}`} onClick={closeMenu}></div>
 
         <div className="main-content">
-          <img src="/logo.png" alt="Logo de la Aplicación" className="logo-main" />
+          <img src="./public/logo.png" alt="Logo de la Aplicación" className="logo-main" />
 
           <Routes>
             <Route path="/pedido" element={<LoginAndForm />} />

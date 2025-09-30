@@ -1,12 +1,41 @@
 import React from "react";
 
 const AREA_OPTIONS = [
-  "Área 1",
-  "Área 2",
-  "Área 3",
-  "IT",
-  "RRHH",
-  "Administración"
+"Administración",
+"Agendas",
+"Ambientación",
+"Artística",
+"Auditoría",
+"Boutique",
+"Cocina",
+"Compras generales",
+"Compras cocinas",
+"Directores",
+"Electricidad",
+"Equipo de coordinación",
+"Fotografia",
+"Gerentes generales",
+"Gerentes de ventas",
+"Iluminaria",
+"Informatica",
+"Jardinería",
+"Jefes de área",
+"Legales",
+"Limpieza",
+"Logística",
+"Mantenimiento",
+"Marketing",
+"Monitoreo",
+"Obras",
+"Pastelería",
+"Recaudadores",
+"Recursos Humanos",
+"Seguridad",
+"Serenos",
+"Servicio técnico",
+"Supervisores de noche",
+"Técnica y sonido",
+"Ventas"
 ];
 
 export default function SelectArea({ value, onChange, label = "Área" }) {

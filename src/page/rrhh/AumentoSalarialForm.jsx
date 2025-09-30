@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import CodigoGenerado from "../../components/CodigoGenerado";
 import PDFPreview from "../../components/PDFPreview";
-import SelectArea from "../../components/SelectArea"; // reutilizamos SelectArea si querés
+import SelectArea from "../../components/SelectArea";
 
 export default function AumentoSalarialForm() {
   const [formData, setFormData] = useState({
@@ -11,6 +11,8 @@ export default function AumentoSalarialForm() {
     motivo: "",
     cuil: "",
     aumentoSueldoA: "",
+    fechaAumento: "",
+    proporcional: "",
     codigo: ""
   });
 
@@ -42,11 +44,12 @@ export default function AumentoSalarialForm() {
       "motivo",
       "cuil",
       "aumentoSueldoA",
+      "fechaAumento",
+      "proporcional",
       "codigo"
     ];
 
-    const emptyFields = requiredFields.filter((f) => !formData[f].toString().trim());
-
+    const emptyFields = requiredFields.filter((f) => !formData[f]?.toString().trim());
     if (emptyFields.length > 0) {
       setMessage(`❌ Completa los campos: ${emptyFields.join(", ")}`);
       return;
@@ -56,7 +59,7 @@ export default function AumentoSalarialForm() {
     setMessage("📤 Enviando solicitud...");
 
     try {
-      const url = "https://script.google.com/macros/s/AKfycbw4HNMF-8Hu3CMJUzPtFiHpKpAhLCyw71oCKPqPmeadgMHGtKXDbuWbRRbUasvTpTMdzw/exec"; // reemplaza con tu URL
+      const url = "https://script.google.com/macros/s/AKfycbw4HNMF-8Hu3CMJUzPtFiHpKpAhLCyw71oCKPqPmeadgMHGtKXDbuWbRRbUasvTpTMdzw/exec";
       const formBody = new URLSearchParams({ ...formData, tipo: "aumentoSalarial" });
 
       const res = await fetch(url, {
@@ -79,6 +82,8 @@ export default function AumentoSalarialForm() {
           motivo: "",
           cuil: "",
           aumentoSueldoA: "",
+          fechaAumento: "",
+          proporcional: "",
           codigo: ""
         });
       } else {
@@ -112,11 +117,7 @@ export default function AumentoSalarialForm() {
         </div>
 
         {/* Sector */}
-        <SelectArea
-          value={formData.sector}
-          onChange={handleSectorChange}
-          label="Sector"
-        />
+        <SelectArea value={formData.sector} onChange={handleSectorChange} label="Sector" />
 
         {/* Puesto */}
         <div style={{ marginBottom: "15px" }}>
@@ -154,13 +155,37 @@ export default function AumentoSalarialForm() {
           />
         </div>
 
-        {/* Aumento Sueldo A */}
+        {/* Aumento Sueldo */}
         <div style={{ marginBottom: "15px" }}>
           <label style={{ fontWeight: "600" }}>Aumento Sueldo</label>
           <input
             type="text"
             name="aumentoSueldoA"
             value={formData.aumentoSueldoA}
+            onChange={handleChange}
+            style={{ width: "70%", padding: "8px" }}
+          />
+        </div>
+
+        {/* Fecha del Aumento */}
+        <div style={{ marginBottom: "15px" }}>
+          <label style={{ fontWeight: "600" }}>Fecha del Aumento</label>
+          <input
+            type="date"
+            name="fechaAumento"
+            value={formData.fechaAumento}
+            onChange={handleChange}
+            style={{ width: "70%", padding: "8px" }}
+          />
+        </div>
+
+        {/* Proporcional */}
+        <div style={{ marginBottom: "15px" }}>
+          <label style={{ fontWeight: "600" }}>Proporcional</label>
+          <input
+            type="text"
+            name="proporcional"
+            value={formData.proporcional}
             onChange={handleChange}
             style={{ width: "70%", padding: "8px" }}
           />

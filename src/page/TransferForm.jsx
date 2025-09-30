@@ -86,7 +86,7 @@ export default function TransferForm() {
 
   // Campos dinámicos
   const campos = [
-    { name: "nombre", label: "Tu Nombre" },
+    { name: "nombre", label: "Nombre y Apellido" },
     { name: "numeroSerie", label: "Número de Serie del Equipo" },
     { name: "personaRecibe", label: "Persona que Recibe El Equipo" },
     { name: "justificacion", label: "Justificación" },
@@ -104,7 +104,7 @@ export default function TransferForm() {
         <SelectArea
           value={formData.area}
           onChange={(value) => setFormData(prev => ({ ...prev, area: value }))}
-          label="Tu Área"
+          label="Área"
         />
 
         {/* Dispositivo */}

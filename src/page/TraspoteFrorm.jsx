@@ -82,7 +82,7 @@ export default function RegistroForm() {
   };
 
   const campos = [
-    { name: "nombre", label: "Tu Nombre" },
+    { name: "nombre", label: "Nombre y Apellido" },
     { name: "telefono", label: "Teléfono" },
     { name: "motivo", label: "Motivo" },
     { name: "queSeLleva", label: "¿Qué se lleva?" },
