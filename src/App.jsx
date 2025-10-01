@@ -35,7 +35,7 @@ function LoginPage({ onLogin }) {
 
   return (
     <div style={{ textAlign: "center" }}>
-                <img src="./public/logo.png" alt="Logo de la Aplicación" className="logo-main" />
+                <img src="./src/assets/logo.png" alt="Logo de la Aplicación" className="logo-main" />
 
       <h2>Login</h2>
       <input
@@ -149,7 +149,7 @@ function App() {
         <div className={`sidebar-overlay ${menuOpen ? "active" : ""}`} onClick={closeMenu}></div>
 
         <div className="main-content">
-          <img src="./public/logo.png" alt="Logo de la Aplicación" className="logo-main" />
+          <img src="./src/assets/logo.png" alt="Logo de la Aplicación" className="logo-main" />
 
           <Routes>
             <Route path="/pedido" element={<LoginAndForm />} />

@@ -59,7 +59,7 @@ export default function AumentoSalarialForm() {
     setMessage("📤 Enviando solicitud...");
 
     try {
-      const url = "https://script.google.com/macros/s/AKfycbw4HNMF-8Hu3CMJUzPtFiHpKpAhLCyw71oCKPqPmeadgMHGtKXDbuWbRRbUasvTpTMdzw/exec";
+      const url = "https://script.google.com/macros/s/AKfycbzeO3Z2wKnrTCgsrcvky2n-rK0KCgcD7A7nBl3SAwPsD7XGT5IFoObrFwKsAo9ZPev33Q/exec";
       const formBody = new URLSearchParams({ ...formData, tipo: "aumentoSalarial" });
 
       const res = await fetch(url, {

@@ -81,7 +81,7 @@ export default function AltaPersonalForm() {
       }
 
       const url =
-        "https://script.google.com/macros/s/AKfycbyKLYg_vvXA4OEDC8juXpmuDBHpd_fRcYfzARsaKHeVQ3punfc7H4ajc1B-LC_SCd6ysA/exec";
+        "https://script.google.com/macros/s/AKfycbypom2tTsLZlMJY0UqGRuSPPJ6-sdv0zWoxTdNZV0KoEJhv2IJ00g53xI-l3FvHUCeDMA/exec";
 
       const formBody = new URLSearchParams({
         ...formData,

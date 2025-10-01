@@ -61,7 +61,7 @@ export default function DesvinculacionForm() {
     setMessage("📤 Enviando solicitud...");
 
     try {
-      const url = "https://script.google.com/macros/s/AKfycbz_u5fNu4QsBsGkK7acD6zqqFjUm8e6ofj4iTkrzE7lTuzh5C6nmysCeFbgQ1XHUN9e7g/exec";
+      const url = "https://script.google.com/macros/s/AKfycbypom2tTsLZlMJY0UqGRuSPPJ6-sdv0zWoxTdNZV0KoEJhv2IJ00g53xI-l3FvHUCeDMA/exec";
       const formBody = new URLSearchParams({ ...formData, tipo: "desvinculacion" });
 
       const res = await fetch(url, {
@@ -191,7 +191,7 @@ export default function DesvinculacionForm() {
 
         {/* Elemento Sí / No */}
         <div style={{ marginBottom: "15px" }}>
-          <label style={{ fontWeight: "600" }}>DISPOSITIVOS DE LA EMPRESA Y OTROS</label>
+          <label style={{ fontWeight: "600" }}>elementos DE LA EMPRESA </label>
           <select
             name="elemento"
             value={formData.elemento}
