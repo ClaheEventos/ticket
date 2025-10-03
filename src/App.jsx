@@ -15,6 +15,7 @@ import CambioPuestoForm from "./page/rrhh/CambioPuestoForm";
 import LicenciaEspecialForm from "./page/rrhh/LicenciaEspecialForm";
 import PermisoExcepcionalForm from "./page/rrhh/PermisoExcepcionalForm";
 import "./App.css";
+import logo from "./assets/img/logo.png"; // relativa a App.jsx
 
 // Inicializar Supabase
 const supabaseUrl = "https://qkvvorfzaugmbgqhynee.supabase.co";
@@ -35,7 +36,7 @@ function LoginPage({ onLogin }) {
 
   return (
     <div style={{ textAlign: "center" }}>
-                <img src="./src/assets/logo.png" alt="Logo de la Aplicación" className="logo-main" />
+<img src={logo} alt="Logo de la Aplicación" className="logo-main" />
 
       <h2>Login</h2>
       <input
@@ -149,7 +150,7 @@ function App() {
         <div className={`sidebar-overlay ${menuOpen ? "active" : ""}`} onClick={closeMenu}></div>
 
         <div className="main-content">
-          <img src="./src/assets/logo.png" alt="Logo de la Aplicación" className="logo-main" />
+          <img src="./src/assets/img/logo.png" alt="Logo de la Aplicación" className="logo-main" />
 
           <Routes>
             <Route path="/pedido" element={<LoginAndForm />} />

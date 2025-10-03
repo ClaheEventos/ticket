@@ -1,71 +1,102 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { jsPDF } from "jspdf";
 
-export default function PDFDownloader({ data }) {
-  const handleDownload = () => {
+export default function CodePDF({ codigo, onClose }) {
+  const [pdfUrl, setPdfUrl] = useState("");
+
+  useEffect(() => {
     const doc = new jsPDF();
 
-    // Estilo ticket
-    doc.setLineWidth(0.5);
-    doc.setDrawColor(50);
-    doc.line(10, 20, 200, 20); // línea superior tipo ticket
-    doc.line(10, 280, 200, 280); // línea inferior tipo ticket
-
-    // Encabezado
-    doc.setFontSize(16);
+    // Código en grande, centrado
+    doc.setFontSize(32);
     doc.setFont("courier", "bold");
-    doc.text("📄 Solicitud de Dispositivos", 105, 30, { align: "center" });
+    doc.text(codigo || "SIN-CÓDIGO", 105, 150, { align: "center" });
 
-    // Separador
-    doc.setLineWidth(0.2);
-    doc.line(10, 35, 200, 35);
+    // Generar blob y URL
+    const blob = doc.output("blob");
+    const url = URL.createObjectURL(blob);
+    setPdfUrl(url);
 
-    // Datos
-    doc.setFont("courier", "normal");
-    doc.setFontSize(12);
-    let y = 45;
-    Object.keys(data).forEach((key) => {
-      doc.text(
-        `${key.charAt(0).toUpperCase() + key.slice(1)}: ${data[key]}`,
-        20,
-        y
-      );
-      y += 10;
-
-      doc.setDrawColor(200);
-      doc.setLineWidth(0.1);
-      doc.line(15, y - 5, 190, y - 5);
-
-      if (y > 270) {
-        doc.addPage();
-        y = 20;
-      }
-    });
-
-    // Pie tipo ticket
-    doc.setFont("courier", "italic");
-    doc.setFontSize(10);
-    doc.text(`Código de solicitud: ${data.codigo || "sin-codigo"}`, 105, 285, {
-      align: "center",
-    });
-
-    doc.save(`Solicitud-${data.codigo || "sin-codigo"}.pdf`);
-  };
+    return () => URL.revokeObjectURL(url);
+  }, [codigo]);
 
   return (
-    <button
-      onClick={handleDownload}
+    <div
       style={{
-        marginTop: "20px",
-        padding: "10px 20px",
-        background: "#e74c3c",
-        color: "white",
-        border: "none",
-        borderRadius: "5px",
-        cursor: "pointer",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        background: "rgba(0,0,0,0.7)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 9999,
       }}
     >
-      📥 Descargar PDF
-    </button>
+      <div
+        style={{
+          width: "300px",
+          maxWidth: "90%",
+          background: "#fff",
+          borderRadius: "15px",
+          padding: "20px",
+          display: "flex",
+          flexDirection: "column",
+          boxShadow: "0 0 15px rgba(0,0,0,0.4)",
+          fontFamily: "'Courier New', Courier, monospace",
+          overflow: "hidden",
+        }}
+      >
+        {/* Vista previa PDF */}
+        <iframe
+          src={pdfUrl}
+          style={{
+            flex: 1,
+            border: "none",
+            borderRadius: "5px",
+            marginBottom: "10px",
+            background: "#f9f9f9",
+          }}
+          title="Código PDF Preview"
+        />
+
+        {/* Botones */}
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <button
+            onClick={() => {
+              const link = document.createElement("a");
+              link.href = pdfUrl;
+              link.download = `Codigo-${codigo || "SIN-CÓDIGO"}.pdf`;
+              link.click();
+            }}
+            style={{
+              padding: "10px",
+              background: "#2ecc71",
+              color: "#fff",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            📥 Descargar PDF
+          </button>
+          <button
+            onClick={onClose}
+            style={{
+              padding: "10px",
+              background: "#e74c3c",
+              color: "#fff",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            ❌ Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

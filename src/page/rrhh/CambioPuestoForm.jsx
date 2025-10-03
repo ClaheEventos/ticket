@@ -117,7 +117,7 @@ export default function CambioPuestoForm() {
         />
 
         <div style={{ marginBottom: "15px" }}>
-          <label style={{ fontWeight: "600" }}>Gerente</label>
+          <label style={{ fontWeight: "600" }}>Nombre y Apellido</label>
           <input type="text" name="gerente" value={formData.gerente} onChange={handleChange} />
         </div>
 

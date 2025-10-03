@@ -39,7 +39,7 @@ export default function SolicitudAdelantoForm() {
     setMessage("📤 Enviando solicitud...");
 
     try {
-      const url = "https://script.google.com/macros/s/TU_URL_REAL/exec"; // reemplaza con tu URL
+      const url = "https://script.google.com/macros/s/AKfycbzeO3Z2wKnrTCgsrcvky2n-rK0KCgcD7A7nBl3SAwPsD7XGT5IFoObrFwKsAo9ZPev33Q/exec"; // reemplaza con tu URL
 
       const formBody = new URLSearchParams({
         ...formData,

@@ -1,63 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { jsPDF } from "jspdf";
 
-export default function PDFPreview({ data, onClose }) {
+export default function TicketPreview({ codigo, onClose }) {
   const [pdfUrl, setPdfUrl] = useState("");
 
   useEffect(() => {
     const doc = new jsPDF();
 
-    // Estilo ticket
+    // Estilo ticket simple
     doc.setLineWidth(0.5);
     doc.setDrawColor(50);
-
-    // Borde superior e inferior tipo ticket
     doc.line(10, 20, 200, 20); // línea superior
     doc.line(10, 280, 200, 280); // línea inferior
 
-    // Encabezado
-    doc.setFontSize(16);
+    // Título grande: Ticket
+    doc.setFontSize(28);
     doc.setFont("courier", "bold");
-    doc.text("📄 Solicitud de Dispositivos", 105, 30, { align: "center" });
+    doc.text("🎫 Ticket", 105, 50, { align: "center" });
 
-    // Separador
-    doc.setLineWidth(0.2);
-    doc.line(10, 35, 200, 35);
-
-    // Datos tipo ticket
-    doc.setFont("courier", "normal");
-    doc.setFontSize(12);
-
-    let y = 45;
-    Object.keys(data).forEach((key) => {
-      doc.text(
-        `${key.charAt(0).toUpperCase() + key.slice(1)}: ${data[key]}`,
-        20,
-        y
-      );
-      y += 10;
-
-      // Línea separadora entre campos
-      doc.setDrawColor(200);
-      doc.setLineWidth(0.1);
-      doc.line(15, y - 5, 190, y - 5);
-
-      // Salto de página si es necesario
-      if (y > 270) {
-        doc.addPage();
-        y = 20;
-      }
-    });
-
-    // Pie tipo ticket
-    doc.setFont("courier", "italic");
-    doc.setFontSize(10);
-    doc.text(
-      `Código de solicitud: ${data.codigo || "sin-codigo"}`,
-      105,
-      285,
-      { align: "center" }
-    );
+    // Código destacado
+    doc.setFontSize(24);
+    doc.setFont("courier", "bold");
+    doc.text(codigo || "SIN-CÓDIGO", 105, 100, { align: "center" });
 
     // Generar blob y URL
     const blob = doc.output("blob");
@@ -65,7 +29,7 @@ export default function PDFPreview({ data, onClose }) {
     setPdfUrl(url);
 
     return () => URL.revokeObjectURL(url);
-  }, [data]);
+  }, [codigo]);
 
   return (
     <div
@@ -84,7 +48,7 @@ export default function PDFPreview({ data, onClose }) {
     >
       <div
         style={{
-          width: "400px",
+          width: "350px",
           maxWidth: "90%",
           background: "#fff",
           borderRadius: "15px",
@@ -92,7 +56,7 @@ export default function PDFPreview({ data, onClose }) {
           display: "flex",
           flexDirection: "column",
           boxShadow: "0 0 15px rgba(0,0,0,0.4)",
-          fontFamily: "'Courier New', Courier, monospace", // estilo ticket
+          fontFamily: "'Courier New', Courier, monospace",
           position: "relative",
           overflow: "hidden",
           border: "2px dashed #2c3e50",
@@ -108,7 +72,7 @@ export default function PDFPreview({ data, onClose }) {
             marginBottom: "10px",
             background: "#f9f9f9",
           }}
-          title="PDF Preview"
+          title="Ticket Preview"
         />
 
         {/* Botones */}
@@ -117,7 +81,7 @@ export default function PDFPreview({ data, onClose }) {
             onClick={() => {
               const link = document.createElement("a");
               link.href = pdfUrl;
-              link.download = `Solicitud-${data.codigo || "sin-codigo"}.pdf`;
+              link.download = `Ticket-${codigo || "SIN-CÓDIGO"}.pdf`;
               link.click();
             }}
             style={{
