@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { HashRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { createClient } from "@supabase/supabase-js";
 
 import LoginAndForm from "./page/LoginAndForm";
 import TransferForm from "./page/TransferForm";
@@ -14,48 +13,68 @@ import PlanillaVacacionesForm from "./page/rrhh/PlanillaVacacionesForm";
 import CambioPuestoForm from "./page/rrhh/CambioPuestoForm";
 import LicenciaEspecialForm from "./page/rrhh/LicenciaEspecialForm";
 import PermisoExcepcionalForm from "./page/rrhh/PermisoExcepcionalForm";
+
 import "./App.css";
-import logo from "./assets/img/logo.png"; // relativa a App.jsx
 
-// Inicializar Supabase
-const supabaseUrl = "https://qkvvorfzaugmbgqhynee.supabase.co";
-const supabaseAnonKey = "sb_publishable_6r1unwBphp5BC-BMfk-nhg_qA0S5S9K"; // reemplaza con tu clave publicable
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// 👇 Nuevo: importamos el componente Logo
+import Logo from "./components/Logo";
 
+// --------------------
+// LOGIN COMPONENT
+// --------------------
 function LoginPage({ onLogin }) {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleLogin = async () => {
     setError("");
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) setError(error.message);
-    else onLogin(data.user.email);
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/jefe/login/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        setError(errData.detail || "Error al iniciar sesión");
+        return;
+      }
+
+      const data = await response.json();
+      localStorage.setItem("accessToken", data.access);
+      localStorage.setItem("refreshToken", data.refresh);
+      localStorage.setItem("userEmail", username);
+      onLogin(username);
+    } catch (err) {
+      setError("No se pudo conectar al servidor");
+    }
   };
 
   return (
     <div style={{ textAlign: "center" }}>
-<img src={logo} alt="Logo de la Aplicación" className="logo-main" />
-
+      {/* 👇 usamos el componente Logo */}
+      <Logo className="logo-main" />
       <h2>Login</h2>
       <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-       
+        type="text"
+        placeholder="Usuario"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
       />
       <br />
       <input
         type="password"
         placeholder="Contraseña"
         value={password}
-        onChange={e => setPassword(e.target.value)}
-        
+        onChange={(e) => setPassword(e.target.value)}
       />
       <br />
-      <button onClick={handleLogin} style={{ padding: "10px 20px", marginTop: "10px" }}>
+      <button
+        onClick={handleLogin}
+        style={{ padding: "10px 20px", marginTop: "10px" }}
+      >
         Ingresar
       </button>
       {error && <p style={{ color: "red" }}>{error}</p>}
@@ -63,6 +82,9 @@ function LoginPage({ onLogin }) {
   );
 }
 
+// --------------------
+// MAIN APP
+// --------------------
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [userEmail, setUserEmail] = useState(localStorage.getItem("userEmail") || "");
@@ -72,15 +94,19 @@ function App() {
     if (userEmail) localStorage.setItem("userEmail", userEmail);
     else localStorage.removeItem("userEmail");
 
-    const handleResize = () => { if (window.innerWidth > 768) setMenuOpen(false); };
+    const handleResize = () => {
+      if (window.innerWidth > 768) setMenuOpen(false);
+    };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [userEmail]);
 
   const closeMenu = () => setMenuOpen(false);
   const handleLogin = (email) => setUserEmail(email);
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("userEmail");
     setUserEmail("");
   };
 
@@ -88,47 +114,63 @@ function App() {
 
   return (
     <Router>
-<div className="app-container">
-  {/* Header arriba */}
-  <header className="app-header">
-   
-<button onClick={handleLogout} className="logout-button">
-  Cerrar<br />Sesión
-</button>  </header>
+      <div className="app-container">
+        {/* Header arriba */}
+        <header className="app-header">
+          <button onClick={handleLogout} className="logout-button">
+            Cerrar<br />Sesión
+          </button>
+        </header>
 
-  {/* Sidebar */}
-  <nav className={`sidebar ${menuOpen ? "open" : ""}`}>
- <p style={{ color: "#ffd700", fontWeight: "bold" }}>
-     {userEmail}
-    </p>
-    <div className="menu">
-      <div className="menu-group-title" onClick={() => setOpenGroup(prev => prev === "RRHH" ? null : "RRHH")}>
-        RRHH
-      </div>
-      {openGroup === "RRHH" && (
-        <>
-          <Link to="/desvinculacion" onClick={closeMenu}>Desvinculación</Link>
-          <Link to="/altaPersonal" onClick={closeMenu}>Alta de Personal</Link>
-          <Link to="/aumentoSalarial" onClick={closeMenu}>Aumento Salarial</Link>
-          <Link to="/adelantoSalarial" onClick={closeMenu}>Adelanto Salarial</Link>
-          <Link to="/planilladevacaciones" onClick={closeMenu}>Planilla De Vacaciones</Link>
-          <Link to="/CambiodePuesto" onClick={closeMenu}>Cambio De Puesto</Link>
-          <Link to="/LicenciaEspecial" onClick={closeMenu}>Licencia Especial</Link>
-          <Link to="/PermisoExcepcional" onClick={closeMenu}>Permiso Excepcional</Link>
-        </>
+        {/* Sidebar */}
+        <nav className={`sidebar ${menuOpen ? "open" : ""}`}>
+          <p style={{ color: "#ffd700", fontWeight: "bold" }}>
+            {userEmail}
+          </p>
+          <div className="menu">
+            <div
+              className="menu-group-title"
+              onClick={() => setOpenGroup(prev => prev === "RRHH" ? null : "RRHH")}
+            >
+              RRHH
+            </div>
+            {openGroup === "RRHH" && (
+              <>
+                <Link to="/desvinculacion" onClick={closeMenu}>Desvinculación</Link>
+                <Link to="/altaPersonal" onClick={closeMenu}>Alta de Personal</Link>
+                <Link to="/aumentoSalarial" onClick={closeMenu}>Aumento Salarial</Link>
+                <Link to="/adelantoSalarial" onClick={closeMenu}>Adelanto Salarial</Link>
+                <Link to="/planilladevacaciones" onClick={closeMenu}>Planilla De Vacaciones</Link>
+                <Link to="/CambiodePuesto" onClick={closeMenu}>Cambio De Puesto</Link>
+                <Link to="/LicenciaEspecial" onClick={closeMenu}>Licencia Especial</Link>
+                <Link to="/PermisoExcepcional" onClick={closeMenu}>Permiso Excepcional</Link>
+              </>
             )}
 
-            <div className="menu-group-title" onClick={() => setOpenGroup(prev => prev === "Choferes" ? null : "Choferes")}>
+            <div
+              className="menu-group-title"
+              onClick={() => setOpenGroup(prev => prev === "Choferes" ? null : "Choferes")}
+            >
               Choferes
             </div>
-            {openGroup === "Choferes" && <Link to="/transporte" onClick={closeMenu}>Pedido De Transporte</Link>}
+            {openGroup === "Choferes" && (
+              <Link to="/transporte" onClick={closeMenu}>Pedido De Transporte</Link>
+            )}
 
-            <div className="menu-group-title" onClick={() => setOpenGroup(prev => prev === "Artistica" ? null : "Artistica")}>
+            <div
+              className="menu-group-title"
+              onClick={() => setOpenGroup(prev => prev === "Artistica" ? null : "Artistica")}
+            >
               Artística
             </div>
-            {openGroup === "Artistica" && <Link to="/artistica" onClick={closeMenu}>Pedidos De Artística</Link>}
+            {openGroup === "Artistica" && (
+              <Link to="/artistica" onClick={closeMenu}>Pedidos De Artística</Link>
+            )}
 
-            <div className="menu-group-title" onClick={() => setOpenGroup(prev => prev === "IT" ? null : "IT")}>
+            <div
+              className="menu-group-title"
+              onClick={() => setOpenGroup(prev => prev === "IT" ? null : "IT")}
+            >
               IT
             </div>
             {openGroup === "IT" && (
@@ -137,20 +179,26 @@ function App() {
                 <Link to="/transfer" onClick={closeMenu}>Traspaso De Dispositivos</Link>
               </>
             )}
-
           </div>
         </nav>
 
-        <div className={`hamburger ${menuOpen ? "active" : ""}`} onClick={() => setMenuOpen(!menuOpen)}>
+        <div
+          className={`hamburger ${menuOpen ? "active" : ""}`}
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
           <div></div>
           <div></div>
           <div></div>
         </div>
 
-        <div className={`sidebar-overlay ${menuOpen ? "active" : ""}`} onClick={closeMenu}></div>
+        <div
+          className={`sidebar-overlay ${menuOpen ? "active" : ""}`}
+          onClick={closeMenu}
+        ></div>
 
         <div className="main-content">
-          <img src="./src/assets/img/logo.png" alt="Logo de la Aplicación" className="logo-main" />
+          {/* 👇 usamos el componente Logo en vez de img */}
+          <Logo className="logo-main" />
 
           <Routes>
             <Route path="/pedido" element={<LoginAndForm />} />
