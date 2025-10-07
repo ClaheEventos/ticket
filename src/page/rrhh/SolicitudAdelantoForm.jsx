@@ -39,11 +39,12 @@ export default function SolicitudAdelantoForm() {
     setMessage("📤 Enviando solicitud...");
 
     try {
-      const url = "https://script.google.com/macros/s/AKfycbzeO3Z2wKnrTCgsrcvky2n-rK0KCgcD7A7nBl3SAwPsD7XGT5IFoObrFwKsAo9ZPev33Q/exec"; // reemplaza con tu URL
+      const url = "https://script.google.com/macros/s/AKfycbzeO3Z2wKnrTCgsrcvky2n-rK0KCgcD7A7nBl3SAwPsD7XGT5IFoObrFwKsAo9ZPev33Q/exec";
 
       const formBody = new URLSearchParams({
         ...formData,
         tipo: "adelanto",
+        dia: new Date().toISOString().split("T")[0] // Agregamos fecha de envío
       });
 
       const res = await fetch(url, {
@@ -56,7 +57,8 @@ export default function SolicitudAdelantoForm() {
 
       if (data.estado === "ok") {
         setMessage("✅ Solicitud enviada correctamente!");
-        setSubmittedData(formData);
+        // Guardamos fecha junto al resto de datos para PDF
+        setSubmittedData({ ...formData, dia: new Date().toLocaleDateString() });
         setShowPreview(true);
 
         setFormData({
@@ -84,7 +86,6 @@ export default function SolicitudAdelantoForm() {
       <form onSubmit={handleSubmit}>
         <CodigoGenerado onGenerate={handleCodigoGenerado} />
 
-        {/* Nombre y Apellido */}
         <div style={{ marginBottom: "15px" }}>
           <label style={{ fontWeight: "600" }}>Nombre y Apellido</label>
           <input
@@ -96,7 +97,6 @@ export default function SolicitudAdelantoForm() {
           />
         </div>
 
-        {/* CUIL */}
         <div style={{ marginBottom: "15px" }}>
           <label style={{ fontWeight: "600" }}>CUIL</label>
           <input
@@ -108,14 +108,12 @@ export default function SolicitudAdelantoForm() {
           />
         </div>
 
-        {/* Sector */}
         <SelectArea
           value={formData.sector}
           onChange={(value) => setFormData((prev) => ({ ...prev, sector: value }))}
           label="Sector"
         />
 
-        {/* Monto */}
         <div style={{ marginBottom: "15px" }}>
           <label style={{ fontWeight: "600" }}>Monto</label>
           <input
@@ -127,7 +125,6 @@ export default function SolicitudAdelantoForm() {
           />
         </div>
 
-        {/* Motivo */}
         <div style={{ marginBottom: "15px" }}>
           <label style={{ fontWeight: "600" }}>Motivo</label>
           <textarea
@@ -139,7 +136,6 @@ export default function SolicitudAdelantoForm() {
           />
         </div>
 
-        {/* Botón */}
         <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "📤 Enviando..." : "Enviar Solicitud"}
         </button>
@@ -153,7 +149,7 @@ export default function SolicitudAdelantoForm() {
 
       {submittedData && showPreview && (
         <PDFPreview
-          data={submittedData}
+          data={submittedData} // Incluye nombreApellido, codigo y dia
           onClose={() => setShowPreview(false)}
         />
       )}
