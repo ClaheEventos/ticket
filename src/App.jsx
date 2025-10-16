@@ -13,7 +13,7 @@ import PlanillaVacacionesForm from "./page/rrhh/PlanillaVacacionesForm";
 import CambioPuestoForm from "./page/rrhh/CambioPuestoForm";
 import LicenciaEspecialForm from "./page/rrhh/LicenciaEspecialForm";
 import PermisoExcepcionalForm from "./page/rrhh/PermisoExcepcionalForm";
-
+import RenunciaForm from "./page/rrhh/Renunciapage";
 import "./App.css";
 
 // 👇 Nuevo: importamos el componente Logo
@@ -21,7 +21,7 @@ import Logo from "./components/Logo";
 
 // --------------------
 // LOGIN COMPONENT
-// --------------------
+// https://48p82xms-8000.brs.devtunnels.ms/api/jefe/login/
 function LoginPage({ onLogin }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -137,6 +137,7 @@ function App() {
             {openGroup === "RRHH" && (
               <>
                 <Link to="/desvinculacion" onClick={closeMenu}>Desvinculación</Link>
+                <Link to="/renuncia" onClick={closeMenu}>renuncia</Link>
                 <Link to="/altaPersonal" onClick={closeMenu}>Alta de Personal</Link>
                 <Link to="/aumentoSalarial" onClick={closeMenu}>Aumento Salarial</Link>
                 <Link to="/adelantoSalarial" onClick={closeMenu}>Adelanto Salarial</Link>
@@ -201,6 +202,7 @@ function App() {
           <Logo className="logo-main" />
 
           <Routes>
+            <Route path="/renuncia" element={<RenunciaForm />} />
             <Route path="/pedido" element={<LoginAndForm />} />
             <Route path="/transfer" element={<TransferForm />} />
             <Route path="/transporte" element={<TransporteForm />} />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { jsPDF } from "jspdf";
-import Simbolo from "./simbolo"; // importá tu componente
+import Simbolo from "./simbolo"; // componente React que muestra tu logo
 
 export default function PDFPreview({ data, onClose }) {
   const [pdfUrl, setPdfUrl] = useState("");
@@ -19,7 +19,7 @@ export default function PDFPreview({ data, onClose }) {
     // Título principal
     doc.setFontSize(28);
     doc.setFont("courier", "bold");
-    doc.text("TICKET DE SOLICITUD", 105, 40, { align: "center" });
+    doc.text("TICKET", 105, 40, { align: "center" });
 
     // Texto introductorio
     doc.setFontSize(14);
@@ -44,7 +44,6 @@ export default function PDFPreview({ data, onClose }) {
     doc.text("Guárdalo ya que será necesario para futuras consultas", 105, 155, { align: "center" });
     doc.text("o verificaciones relacionadas con esta solicitud.", 105, 165, { align: "center" });
 
-    // Generar URL
     const blob = doc.output("blob");
     const url = URL.createObjectURL(blob);
     setPdfUrl(url);
@@ -61,22 +60,30 @@ export default function PDFPreview({ data, onClose }) {
       alignItems: "center", zIndex: 9999
     }}>
       <div style={{
-        width: "350px", maxWidth: "90%", background: "#fff", borderRadius: "15px",
+        width: "400px", maxWidth: "90%", background: "#fff", borderRadius: "15px",
         padding: "20px", display: "flex", flexDirection: "column",
         boxShadow: "0 0 15px rgba(0,0,0,0.4)", fontFamily: "'Courier New', Courier, monospace",
         position: "relative", overflow: "hidden", border: "2px dashed #2c3e50"
       }}>
-        
-        {/* Aquí agregamos el símbolo */}
-        <div style={{ textAlign: "center", marginBottom: "10px" }}>
+
+        {/* Logo / Símbolo arriba */}
+        <div style={{ textAlign: "center", marginBottom: "15px" }}>
           <Simbolo className="w-20 h-20 mx-auto" />
         </div>
 
-        {/* Vista previa PDF */}
-        <iframe src={pdfUrl} style={{
-          flex: 1, border: "none", borderRadius: "5px",
-          marginBottom: "10px", background: "#f9f9f9"
-        }} title="Ticket Preview" />
+        {/* Vista previa del ticket */}
+        <iframe
+          src={pdfUrl}
+          style={{
+            flex: 1,
+            border: "none",
+            borderRadius: "5px",
+            minHeight: "400px",
+            background: "#f9f9f9",
+            marginBottom: "15px"
+          }}
+          title="Ticket Preview"
+        />
 
         {/* Botones */}
         <div style={{ display: "flex", justifyContent: "space-between" }}>
