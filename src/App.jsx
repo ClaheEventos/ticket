@@ -1,61 +1,102 @@
 import React, { useState, useEffect } from "react";
-import { HashRouter as Router, Routes, Route, Link } from "react-router-dom";
+import {
+  HashRouter as Router,
+  Routes,
+  Route,
+  Link,
+  useLocation,
+} from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 
 import LoginAndForm from "./page/LoginAndForm";
 import TransferForm from "./page/TransferForm";
 import TransporteForm from "./page/TraspoteFrorm";
 import ArtisticaForm from "./page/ArtisticaForm";
+
 import DesvinculacionForm from "./page/rrhh/DesvinculacionForm";
 import AltaPersonalForm from "./page/rrhh/AltaPersonalForm";
 import AumentoSalarialForm from "./page/rrhh/AumentoSalarialForm";
-
 import PlanillaVacacionesForm from "./page/rrhh/PlanillaVacacionesForm";
 import CambioPuestoForm from "./page/rrhh/CambioPuestoForm";
 import LicenciaEspecialForm from "./page/rrhh/LicenciaEspecialForm";
 import PermisoExcepcionalForm from "./page/rrhh/PermisoExcepcionalForm";
 import RenunciaForm from "./page/rrhh/Renunciapage";
 import CambioDePuestoAVentasForm from "./page/rrhh/CambioDePuestoAVentaspage";
-import PuestoSelectFrom from "./page/rrhh/PuestoSelectpage";
+
+import Logo from "./components/Logo";
 import "./App.css";
 
-// 👇 Nuevo: importamos el componente Logo
-import Logo from "./components/Logo";
+/* =======================
+   AUTH FETCH GLOBAL
+======================= */
+export const authFetch = async (url, options = {}) => {
+  const token = localStorage.getItem("accessToken");
 
-// --------------------
-// LOGIN COMPONENT
-// https://48p82xms-8000.brs.devtunnels.ms/api/jefe/login/
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      ...(options.headers || {}),
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (response.status === 401 || response.status === 403) {
+
+    localStorage.clear();
+    window.location.href = "/";
+    throw new Error("Sesión expirada");
+  }
+
+  return response;
+};
+
+/* =======================
+   LOGIN
+======================= */
 function LoginPage({ onLogin }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
+    if (!username || !password) {
+      setError("Completá usuario y contraseña");
+      return;
+    }
+
+    setLoading(true);
     setError("");
+
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/jefe/login/", {
+      const res = await fetch("https://it-b450mhp.tail202065.ts.net//api/jefe/login/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
 
-      if (!response.ok) {
-        const errData = await response.json();
-        setError(errData.detail || "Error al iniciar sesión");
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError("Usuario o contraseña incorrectos");
         return;
       }
 
-      const data = await response.json();
       localStorage.setItem("accessToken", data.access);
       localStorage.setItem("refreshToken", data.refresh);
       localStorage.setItem("userEmail", username);
-      onLogin(username);
-    } catch (err) {
+
+      onLogin();
+    } catch {
       setError("No se pudo conectar al servidor");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div style={{ textAlign: "center" }}>
+       <div style={{ textAlign: "center" }}>
       {/* 👇 usamos el componente Logo */}
       <Logo className="logo-main" />
       <h2>Login</h2>
@@ -84,103 +125,133 @@ function LoginPage({ onLogin }) {
   );
 }
 
-// --------------------
-// MAIN APP
-// --------------------
+/* =======================
+   TRANSICIÓN
+======================= */
+function Page({ children }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -15 }}
+      transition={{ duration: 0.25 }}
+      className="page-transition"
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function AnimatedRoutes() {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/renuncia" element={<Page><RenunciaForm /></Page>} />
+        <Route path="/pedido" element={<Page><LoginAndForm /></Page>} />
+        <Route path="/transfer" element={<Page><TransferForm /></Page>} />
+        <Route path="/transporte" element={<Page><TransporteForm /></Page>} />
+        <Route path="/artistica" element={<Page><ArtisticaForm /></Page>} />
+
+        <Route path="/desvinculacion" element={<Page><DesvinculacionForm /></Page>} />
+        <Route path="/altaPersonal" element={<Page><AltaPersonalForm /></Page>} />
+        <Route path="/aumentoSalarial" element={<Page><AumentoSalarialForm /></Page>} />
+        <Route path="/planilladevacaciones" element={<Page><PlanillaVacacionesForm /></Page>} />
+        <Route path="/CambiodePuesto" element={<Page><CambioPuestoForm /></Page>} />
+        <Route path="/LicenciaEspecial" element={<Page><LicenciaEspecialForm /></Page>} />
+        <Route path="/PermisoExcepcional" element={<Page><PermisoExcepcionalForm /></Page>} />
+        <Route path="/CambioDePuestoAVentas" element={<Page><CambioDePuestoAVentasForm /></Page>} />
+
+        <Route path="*" element={<Page><LoginAndForm /></Page>} />
+      </Routes>
+    </AnimatePresence>
+  );
+}
+
+/* =======================
+   APP
+======================= */
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [userEmail, setUserEmail] = useState(localStorage.getItem("userEmail") || "");
+  const [isAuth, setIsAuth] = useState(false);
   const [openGroup, setOpenGroup] = useState(null);
 
+  const userEmail = localStorage.getItem("userEmail");
+
   useEffect(() => {
-    if (userEmail) localStorage.setItem("userEmail", userEmail);
-    else localStorage.removeItem("userEmail");
+    const checkAuth = async () => {
+      const token = localStorage.getItem("accessToken");
+      if (!token) return;
 
-    const handleResize = () => {
-      if (window.innerWidth > 768) setMenuOpen(false);
+      try {
+        await authFetch("https://it-b450mhp.tail202065.ts.net/api/jefe/protegida/");
+        setIsAuth(true);
+      } catch {
+        setIsAuth(false);
+      }
     };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [userEmail]);
 
-  const closeMenu = () => setMenuOpen(false);
-  const handleLogin = (email) => setUserEmail(email);
-  const handleLogout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("userEmail");
-    setUserEmail("");
+    checkAuth();
+  }, []);
+
+  useEffect(() => {
+    const resize = () => window.innerWidth > 768 && setMenuOpen(false);
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
+  }, []);
+
+  const logout = () => {
+    localStorage.clear();
+    setIsAuth(false);
+    window.location.href = "/";
   };
 
-  if (!userEmail) return <LoginPage onLogin={handleLogin} />;
+  if (!isAuth) {
+    return <LoginPage onLogin={() => setIsAuth(true)} />;
+  }
 
   return (
     <Router>
       <div className="app-container">
-        {/* Header arriba */}
         <header className="app-header">
-          <button onClick={handleLogout} className="logout-button">
-            Cerrar<br />Sesión
+          <button onClick={logout} className="logout-button">
+            Cerrar sesión
           </button>
         </header>
 
-        {/* Sidebar */}
         <nav className={`sidebar ${menuOpen ? "open" : ""}`}>
-          <p style={{ color: "#ffd700", fontWeight: "bold" }}>
-            {userEmail}
-          </p>
+          <p className="user">{userEmail}</p>
+
           <div className="menu">
-            <div
-              className="menu-group-title"
-              onClick={() => setOpenGroup(prev => prev === "RRHH" ? null : "RRHH")}
-            >
-              RRHH 
+            <div className="menu-group-title" onClick={() => setOpenGroup(openGroup === "RRHH" ? null : "RRHH")}>
+              RRHH
             </div>
             {openGroup === "RRHH" && (
               <>
-                <Link to="/desvinculacion" onClick={closeMenu}>Desvinculación</Link>
-                <Link to="/renuncia" onClick={closeMenu}>renuncia</Link>
-                <Link to="/CambioDePuestoAVentas" onClick={closeMenu}>Cambio Ventas</Link> 
-                
-                <Link to="/altaPersonal" onClick={closeMenu}>Alta de Personal</Link>
-                <Link to="/aumentoSalarial" onClick={closeMenu}>Aumento Salarial</Link>
-                <Link to="/planilladevacaciones" onClick={closeMenu}>Planilla De Vacaciones</Link>
-                <Link to="/CambiodePuesto" onClick={closeMenu}>Cambio De Puesto</Link>
-                <Link to="/LicenciaEspecial" onClick={closeMenu}>Licencia Especial</Link>
-                <Link to="/PermisoExcepcional" onClick={closeMenu}>Permiso Excepcional</Link>
+                <Link to="/desvinculacion">Desvinculación</Link>
+                <Link to="/renuncia">Renuncia</Link>
+                <Link to="/altaPersonal">Alta Personal</Link>
+                <Link to="/aumentoSalarial">Aumento Salarial</Link>
+                <Link to="/planilladevacaciones">Vacaciones</Link>
+                <Link to="/CambiodePuesto">Cambio Puesto</Link>
+                <Link to="/LicenciaEspecial">Licencia</Link>
+                <Link to="/PermisoExcepcional">Permiso</Link>
               </>
             )}
 
-            <div
-              className="menu-group-title"
-              onClick={() => setOpenGroup(prev => prev === "Choferes" ? null : "Choferes")}
-            >
+            <div className="menu-group-title" onClick={() => setOpenGroup(openGroup === "Choferes" ? null : "Choferes")}>
               Choferes
             </div>
-            {openGroup === "Choferes" && (
-              <Link to="/transporte" onClick={closeMenu}>Pedido De Transporte</Link>
-            )}
+            {openGroup === "Choferes" && <Link to="/transporte">Transporte</Link>}
 
-            <div
-              className="menu-group-title"
-              onClick={() => setOpenGroup(prev => prev === "Artistica" ? null : "Artistica")}
-            >
-              Artística
-            </div>
-            {openGroup === "Artistica" && (
-              <Link to="/artistica" onClick={closeMenu}>Pedidos De Artística</Link>
-            )}
-
-            <div
-              className="menu-group-title"
-              onClick={() => setOpenGroup(prev => prev === "IT" ? null : "IT")}
-            >
+            <div className="menu-group-title" onClick={() => setOpenGroup(openGroup === "IT" ? null : "IT")}>
               IT
             </div>
             {openGroup === "IT" && (
               <>
-                <Link to="/pedido" onClick={closeMenu}>Pedido De Dispositivos</Link>
-                <Link to="/transfer" onClick={closeMenu}>Traspaso De Dispositivos</Link>
+                <Link to="/pedido">Pedido</Link>
+                <Link to="/transfer">Traspaso</Link>
               </>
             )}
           </div>
@@ -190,38 +261,18 @@ function App() {
           className={`hamburger ${menuOpen ? "active" : ""}`}
           onClick={() => setMenuOpen(!menuOpen)}
         >
-          <div></div>
-          <div></div>
-          <div></div>
+          <div></div><div></div><div></div>
         </div>
 
         <div
           className={`sidebar-overlay ${menuOpen ? "active" : ""}`}
-          onClick={closeMenu}
-        ></div>
+          onClick={() => setMenuOpen(false)}
+        />
 
-        <div className="main-content">
-          {/* 👇 usamos el componente Logo en vez de img */}
+        <main className="main-content">
           <Logo className="logo-main" />
-
-          <Routes>
-            <Route path="/renuncia" element={<RenunciaForm />} />
-            <Route path="/pedido" element={<LoginAndForm />} />
-            <Route path="/transfer" element={<TransferForm />} />
-            <Route path="/transporte" element={<TransporteForm />} />
-            <Route path="/artistica" element={<ArtisticaForm />} />
-            <Route path="/desvinculacion" element={<DesvinculacionForm />} />
-            <Route path="/altaPersonal" element={<AltaPersonalForm />} />
-            <Route path="/aumentoSalarial" element={<AumentoSalarialForm />} />
-            <Route path="/planilladevacaciones" element={<PlanillaVacacionesForm />} />
-            <Route path="/CambiodePuesto" element={<CambioPuestoForm />} />
-            <Route path="/LicenciaEspecial" element={<LicenciaEspecialForm />} />
-            <Route path="/PermisoExcepcional" element={<PermisoExcepcionalForm />} />
-             <Route path="/CambioDePuestoAVentas" element={<CambioDePuestoAVentasForm />} />
-             
-            <Route path="/" element={<LoginAndForm />} />
-          </Routes>
-        </div>
+          <AnimatedRoutes />
+        </main>
       </div>
     </Router>
   );

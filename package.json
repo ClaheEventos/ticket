@@ -13,6 +13,7 @@
   "dependencies": {
     "@react-oauth/google": "^0.12.2",
     "@supabase/supabase-js": "^2.58.0",
+    "framer-motion": "^12.23.26",
     "jspdf": "^3.0.2",
     "jwt-decode": "^3.1.2",
     "react": "^19.1.1",
